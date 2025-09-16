@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smart Community Health Monitoring Design System */
+/* Designed for rural Northeast India - Beautiful, accessible, and intuitive */
+
+@layer base {
+  :root {
+    /* Clean water inspired colors - sourced from pristine mountain streams */
+    --background: 210 40% 98%;
+    --foreground: 210 40% 8%;
+    
+    /* Card system with subtle elevations */
+    --card: 0 0% 100%;
+    --card-foreground: 210 40% 8%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 40% 8%;
+    
+    /* Water theme - inspired by Northeast India's rivers */
+    --primary: 190 85% 35%;
+    --primary-foreground: 0 0% 98%;
+    
+    /* Health theme - representing vitality and wellness */
+    --secondary: 142 76% 36%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 210 40% 92%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    /* Community theme - warm like village gatherings */
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 190 85% 35%;
+    
+    /* Water Quality Status - Clear visual communication */
+    --water-safe: 142 76% 36%;      /* Safe like forest green */
+    --water-warning: 48 96% 53%;    /* Caution like sunset */
+    --water-unsafe: 0 84% 60%;      /* Alert like coral */
+    
+    /* Health Status matching water quality */
+    --health-good: 142 76% 36%;
+    --health-concern: 48 96% 53%;
+    --health-critical: 0 84% 60%;
+    
+    --radius: 0.75rem;
+    
+    /* Enhanced gradients for stunning visuals */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(190 85% 45%));
+    --gradient-health: linear-gradient(135deg, hsl(var(--secondary)), hsl(142 76% 46%));
+    --gradient-community: linear-gradient(135deg, hsl(var(--accent)), hsl(25 95% 63%));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-sunset: linear-gradient(135deg, hsl(25 95% 53%), hsl(48 96% 53%));
+    --gradient-water: linear-gradient(135deg, hsl(190 85% 35%), hsl(220 70% 45%));
+    
+    /* Sophisticated shadow system */
+    --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-card: 0 4px 12px -4px hsl(210 40% 8% / 0.1);
+    --shadow-floating: 0 8px 25px -8px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
+    --shadow-health: 0 8px 25px -8px hsl(var(--secondary) / 0.2);
+
+    /* Sidebar styling - consistent with health theme */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark mode optimized for rural device usage */
+    --background: 210 40% 8%;
+    --foreground: 210 40% 98%;
+    --card: 210 40% 12%;
+    --card-foreground: 210 40% 98%;
+    --primary: 190 85% 45%;
+    --secondary: 142 76% 46%;
+    --accent: 25 95% 63%;
+    --border: 210 40% 20%;
+    --input: 210 40% 20%;
+    --muted: 210 40% 16%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    /* Enhanced shadows for dark mode */
+    --shadow-card: 0 4px 12px -4px hsl(0 0% 0% / 0.3);
+    --shadow-floating: 0 8px 25px -8px hsl(0 0% 0% / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    line-height: 1.6;
+  }
+
+  /* Enhanced component classes using design system */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-health {
+    background: var(--gradient-health);
+  }
+  
+  .gradient-community {
+    background: var(--gradient-community);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-sunset {
+    background: var(--gradient-sunset);
+  }
+  
+  .gradient-water {
+    background: var(--gradient-water);
+  }
+  
+  .shadow-primary {
+    box-shadow: var(--shadow-primary);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-floating {
+    box-shadow: var(--shadow-floating);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .shadow-health {
+    box-shadow: var(--shadow-health);
+  }
+
+  /* Water quality indicator styles with enhanced visuals */
+  .water-safe {
+    color: hsl(var(--water-safe));
+  }
+  
+  .water-warning {
+    color: hsl(var(--water-warning));
+  }
+  
+  .water-unsafe {
+    color: hsl(var(--water-unsafe));
+  }
+
+  .bg-water-safe {
+    background-color: hsl(var(--water-safe));
+  }
+  
+  .bg-water-warning {
+    background-color: hsl(var(--water-warning));
+  }
+  
+  .bg-water-unsafe {
+    background-color: hsl(var(--water-unsafe));
+  }
+
+  /* Enhanced interaction states */
+  .hover-lift {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-floating);
+  }
+  
+  /* Accessibility improvements */
+  .focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+  
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Loading states */
+  .loading-shimmer {
+    background: linear-gradient(90deg, 
+      hsl(var(--muted)) 25%, 
+      hsl(var(--muted) / 0.5) 50%, 
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+}

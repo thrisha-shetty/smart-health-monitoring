@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserCog, MapPin, ArrowLeft } from 'lucide-react';
+import { UserCog, Lock, ArrowLeft } from 'lucide-react';
 
 interface AdminLoginProps {
   onLogin: (adminData: { name: string; village: string }) => void;
@@ -15,7 +15,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onBack }) => {
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
     adminName: '',
-    villageName: ''
+    password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,7 +25,9 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onBack }) => {
     
     // Simulate API call
     setTimeout(() => {
-      onLogin({ name: formData.adminName, village: formData.villageName });
+      // For now, we'll just pass a mock village name based on the admin name
+      // In a real application, you would validate the password and fetch the village from the server
+      onLogin({ name: formData.adminName, village: 'Mock Village' }); 
       setIsLoading(false);
     }, 1000);
   };
@@ -70,15 +72,15 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onBack }) => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="villageId">Village ID</Label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  id="villageId"
-                  type="text"
-                  value={formData.villageName}
-                  onChange={(e) => handleInputChange('villageName', e.target.value)}
-                  placeholder="Enter village ID (e.g., VIL001)"
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  placeholder="Enter your password"
                   className="pl-10 h-12"
                   required
                 />
@@ -89,7 +91,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onBack }) => {
               type="submit" 
               variant="hero" 
               className="w-full h-12 mt-6"
-              disabled={isLoading || !formData.adminName || !formData.villageName}
+              disabled={isLoading || !formData.adminName || !formData.password}
             >
               {isLoading ? 'Logging in...' : t('login')}
             </Button>

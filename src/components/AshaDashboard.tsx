@@ -7,17 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Home, 
-  UserPlus, 
-  FileText, 
-  Bell, 
+import {
+  Home,
+  UserPlus,
+  FileText,
+  Bell,
   Settings,
   User,
   Droplets,
-  Thermometer,
   Save,
-  MapPin,
   Shield
 } from 'lucide-react';
 import WaterQualityCard from './WaterQualityCard';
@@ -37,8 +35,7 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
     name: '',
     age: '',
     gender: '',
-    symptoms: '',
-    location: ''
+    symptoms: [] as string[],
   });
 
   const [waterData, setWaterData] = useState({
@@ -46,7 +43,6 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
     pH: '',
     temperature: '',
     sourceCondition: '',
-    location: ''
   });
 
   // Mock current water quality data
@@ -69,8 +65,7 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
       name: '',
       age: '',
       gender: '',
-      symptoms: '',
-      location: ''
+      symptoms: [],
     });
   };
 
@@ -86,7 +81,15 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
       pH: '',
       temperature: '',
       sourceCondition: '',
-      location: ''
+    });
+  };
+
+  const handleSymptomSelection = (value: string) => {
+    setPatientData(prevData => {
+      const newSymptoms = prevData.symptoms.includes(value)
+        ? prevData.symptoms.filter(s => s !== value)
+        : [...prevData.symptoms, value];
+      return { ...prevData, symptoms: newSymptoms };
     });
   };
 
@@ -128,7 +131,7 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
 
         {/* Bottom Navigation */}
         <Tabs defaultValue="home" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="home" className="flex flex-col items-center gap-1 h-16">
               <Home className="w-4 h-4" />
               <span className="text-xs">{t('dashboard')}</span>
@@ -144,10 +147,6 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
             <TabsTrigger value="alerts" className="flex flex-col items-center gap-1 h-16">
               <Bell className="w-4 h-4" />
               <span className="text-xs">{t('alerts')}</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex flex-col items-center gap-1 h-16">
-              <Settings className="w-4 h-4" />
-              <span className="text-xs">{t('settings')}</span>
             </TabsTrigger>
           </TabsList>
           
@@ -240,33 +239,18 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
                     </div>
                     <div>
                       <Label>{t('symptoms')}</Label>
-                      <Select value={patientData.symptoms} onValueChange={(value) => setPatientData({...patientData, symptoms: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select symptoms" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {symptoms.map((symptom) => (
-                            <SelectItem key={symptom.value} value={symptom.value}>
-                              {symptom.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="patientLocation">{t('location')}</Label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="patientLocation"
-                        value={patientData.location}
-                        onChange={(e) => setPatientData({...patientData, location: e.target.value})}
-                        placeholder="Enter location"
-                        className="pl-10"
-                        required
-                      />
+                      <div className="flex flex-wrap gap-2 p-2 rounded-md border bg-card text-card-foreground">
+                        {symptoms.map(symptom => (
+                          <Badge 
+                            key={symptom.value} 
+                            variant={patientData.symptoms.includes(symptom.value) ? 'default' : 'secondary'}
+                            onClick={() => handleSymptomSelection(symptom.value)}
+                            className="cursor-pointer transition-colors duration-200"
+                          >
+                            {symptom.label}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
                   </div>
                   
@@ -342,20 +326,6 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
                         </SelectContent>
                       </Select>
                     </div>
-                    <div>
-                      <Label htmlFor="waterLocation">{t('location')}</Label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="waterLocation"
-                          value={waterData.location}
-                          onChange={(e) => setWaterData({...waterData, location: e.target.value})}
-                          placeholder="Water source location"
-                          className="pl-10"
-                          required
-                        />
-                      </div>
-                    </div>
                   </div>
                   
                   <Button type="submit" variant="water" className="w-full">
@@ -422,28 +392,6 @@ const AshaDashboard: React.FC<AshaDashboardProps> = ({ workerData, onLogout }) =
               </CardHeader>
               <CardContent className="p-0">
                 <HealthAwareness />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="settings">
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle>{t('settings')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Worker ID</Label>
-                    <Input value={workerData.workerId} disabled />
-                  </div>
-                  <Button variant="outline">
-                    Change Language
-                  </Button>
-                  <Button variant="outline">
-                    Update Profile
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>

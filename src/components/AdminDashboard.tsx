@@ -9,12 +9,14 @@ import {
   BarChart3, 
   Users, 
   Plus, 
-  MessageSquare, 
-  Settings, 
   UserPlus,
   Activity,
   Droplets,
-  AlertCircle
+  AlertCircle,
+  Trash2,
+  List,
+  CheckCircle,
+  AlertTriangle
 } from 'lucide-react';
 import WaterQualityCard from './WaterQualityCard';
 
@@ -32,6 +34,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
     { id: 'ASHA003', name: 'Priya Gogoi', status: 'inactive' }
   ]);
 
+  const [activeTab, setActiveTab] = useState('workers');
+
+  // Dummy data for Active Cases
+  const [activeCases, setActiveCases] = useState([
+    { id: 'C-001', patient: 'Ramesh Singh', issue: 'High Fever', worker: 'ASHA001', status: 'pending', date: '2025-09-15' },
+    { id: 'C-002', patient: 'Sita Devi', issue: 'Diarrhea', worker: 'ASHA002', status: 'in-progress', date: '2025-09-14' },
+    { id: 'C-003', patient: 'Gopal Reddy', issue: 'Water-borne Illness', worker: 'ASHA001', status: 'resolved', date: '2025-09-12' },
+    { id: 'C-004', patient: 'Anjali Patel', issue: 'Malnutrition', worker: 'ASHA003', status: 'pending', date: '2025-09-10' }
+  ]);
+
+  // Dummy data for Alerts
+  const [alerts, setAlerts] = useState([
+    { id: 'A-001', type: 'Water Quality', description: 'Turbidity above safe levels at source #3', timestamp: '2025-09-16 10:30 AM' },
+    { id: 'A-002', type: 'Health Alert', description: 'Possible outbreak of diarrhea in Sector B', timestamp: '2025-09-16 09:15 AM' }
+  ]);
+
+  // Dummy data for Water Sources
+  const [waterSources, setWaterSources] = useState([
+    { id: 'WS-001', name: 'Village Well - North', status: 'safe', lastTest: '2025-09-15', location: 'Near Panchayat Office' },
+    { id: 'WS-002', name: 'Community Borewell', status: 'warning', lastTest: '2025-09-16', location: 'Main Village Square' },
+    { id: 'WS-003', name: 'Hand Pump - South', status: 'safe', lastTest: '2025-09-16', location: 'South Sector, behind school' }
+  ]);
+  
   // Mock water quality data
   const waterQualityData = {
     turbidity: 1.5,
@@ -57,6 +82,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
     }
   };
 
+  const handleRemoveWorker = (workerId: string) => {
+    if (window.confirm(`Are you sure you want to remove ASHA Worker with ID: ${workerId}?`)) {
+      setWorkers(workers.filter(worker => worker.id !== workerId));
+      alert(`ASHA Worker with ID: ${workerId} has been removed.`);
+    }
+  };
+
+  const handleCardClick = (tabValue: string) => {
+    setActiveTab(tabValue);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -75,7 +111,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up">
+          <Card 
+            className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up cursor-pointer"
+            onClick={() => handleCardClick('workers')}
+          >
             <CardContent className="p-4 text-center">
               <Users className="w-8 h-8 text-secondary mx-auto mb-2 animate-bounce-gentle" />
               <div className="text-2xl font-bold">{workers.length}</div>
@@ -83,26 +122,38 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
             </CardContent>
           </Card>
           
-          <Card className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <Card 
+            className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up cursor-pointer" 
+            style={{ animationDelay: '100ms' }}
+            onClick={() => handleCardClick('activeCases')}
+          >
             <CardContent className="p-4 text-center">
               <Activity className="w-8 h-8 text-primary mx-auto mb-2 animate-float" />
-              <div className="text-2xl font-bold">24</div>
+              <div className="text-2xl font-bold">{activeCases.length}</div>
               <div className="text-sm text-muted-foreground">Active Cases</div>
             </CardContent>
           </Card>
           
-          <Card className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up" style={{ animationDelay: '200ms' }}>
+          <Card 
+            className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up cursor-pointer" 
+            style={{ animationDelay: '200ms' }}
+            onClick={() => handleCardClick('reports')}
+          >
             <CardContent className="p-4 text-center">
               <Droplets className="w-8 h-8 text-water-safe mx-auto mb-2 animate-pulse" />
-              <div className="text-2xl font-bold">5</div>
+              <div className="text-2xl font-bold">{waterSources.length}</div>
               <div className="text-sm text-muted-foreground">Water Sources</div>
             </CardContent>
           </Card>
           
-          <Card className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up" style={{ animationDelay: '300ms' }}>
+          <Card 
+            className="shadow-card hover:shadow-floating transition-all duration-300 animate-slide-up cursor-pointer" 
+            style={{ animationDelay: '300ms' }}
+            onClick={() => handleCardClick('alerts')}
+          >
             <CardContent className="p-4 text-center">
               <AlertCircle className="w-8 h-8 text-water-warning mx-auto mb-2 animate-bounce-gentle" />
-              <div className="text-2xl font-bold">2</div>
+              <div className="text-2xl font-bold">{alerts.length}</div>
               <div className="text-sm text-muted-foreground">Alerts</div>
             </CardContent>
           </Card>
@@ -112,8 +163,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
         <WaterQualityCard reading={waterQualityData} />
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="workers" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
             <TabsTrigger value="workers" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Workers
@@ -122,9 +173,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
               <BarChart3 className="w-4 h-4" />
               Reports
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Settings
+            <TabsTrigger value="activeCases" className="flex items-center gap-2">
+              <List className="w-4 h-4" />
+              Cases
+            </TabsTrigger>
+            <TabsTrigger value="alerts" className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              Alerts
             </TabsTrigger>
           </TabsList>
           
@@ -175,7 +230,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
             {/* Workers List */}
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>Active ASHA Workers</CardTitle>
+                <CardTitle>ASHA Workers ({workers.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -185,8 +240,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
                         <div className="font-medium">{worker.name}</div>
                         <div className="text-sm text-muted-foreground">ID: {worker.id}</div>
                       </div>
-                      <div className={`px-2 py-1 rounded-full text-xs ${worker.status === 'active' ? 'bg-water-safe text-white' : 'bg-muted text-muted-foreground'}`}>
-                        {worker.status}
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${worker.status === 'active' ? 'bg-water-safe text-white' : 'bg-muted text-muted-foreground'}`}>
+                          {worker.status}
+                        </span>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleRemoveWorker(worker.id)}
+                          className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -195,7 +260,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
             </Card>
           </TabsContent>
           
-          <TabsContent value="reports">
+          <TabsContent value="reports" className="space-y-4">
             <Card className="shadow-card">
               <CardHeader>
                 <CardTitle>{t('healthTrends')}</CardTitle>
@@ -203,31 +268,87 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
               <CardContent>
                 <div className="text-center py-8 text-muted-foreground">
                   <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>Health trend charts will be displayed here</p>
+                  <p>Health trend charts will be displayed here.</p>
                   <p className="text-sm">Data visualization coming soon</p>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-          
-          <TabsContent value="settings">
+
+            {/* Water Sources List */}
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>{t('settings')}</CardTitle>
+                <CardTitle>Water Sources ({waterSources.length})</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Village Name</Label>
-                    <Input value={adminData.village} disabled />
-                  </div>
-                  <div>
-                    <Label>Admin Name</Label>
-                    <Input value={adminData.name} disabled />
-                  </div>
-                  <Button variant="outline">
-                    Update Profile
-                  </Button>
+                <div className="space-y-3">
+                  {waterSources.map((source) => (
+                    <div key={source.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div>
+                        <div className="font-medium">{source.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          Location: {source.location} | Last Test: {source.lastTest}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {source.status === 'safe' ? (
+                          <CheckCircle className="w-5 h-5 text-green-500" />
+                        ) : (
+                          <AlertTriangle className="w-5 h-5 text-yellow-500" />
+                        )}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${source.status === 'safe' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'}`}>
+                          {source.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="activeCases">
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle>Active Cases ({activeCases.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {activeCases.map((caseItem) => (
+                    <div key={caseItem.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div>
+                        <div className="font-medium">{caseItem.patient}</div>
+                        <div className="text-sm text-muted-foreground">Issue: {caseItem.issue}</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${caseItem.status === 'resolved' ? 'bg-green-500 text-white' : caseItem.status === 'in-progress' ? 'bg-blue-500 text-white' : 'bg-yellow-500 text-white'}`}>
+                          {caseItem.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle>Water Quality Alerts ({alerts.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {alerts.map((alert) => (
+                    <div key={alert.id} className="flex items-start justify-between p-3 bg-muted/50 rounded-lg">
+                      <div className="flex-1 pr-4">
+                        <div className="font-medium">{alert.type}</div>
+                        <div className="text-sm text-muted-foreground">{alert.description}</div>
+                      </div>
+                      <div className="text-xs text-muted-foreground min-w-[100px] text-right">
+                        {alert.timestamp}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>

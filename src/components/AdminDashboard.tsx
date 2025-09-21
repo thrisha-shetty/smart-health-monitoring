@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +16,10 @@ import {
   Trash2,
   List,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Award,
+  FlaskConical,
+  HeartCrack
 } from 'lucide-react';
 import WaterQualityCard from './WaterQualityCard';
 
@@ -36,12 +39,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
 
   const [activeTab, setActiveTab] = useState('workers');
 
-  // Dummy data for Active Cases
+  // Dummy data for Active Cases, now with village info
   const [activeCases, setActiveCases] = useState([
-    { id: 'C-001', patient: 'Ramesh Singh', issue: 'High Fever', worker: 'ASHA001', status: 'pending', date: '2025-09-15' },
-    { id: 'C-002', patient: 'Sita Devi', issue: 'Diarrhea', worker: 'ASHA002', status: 'in-progress', date: '2025-09-14' },
-    { id: 'C-003', patient: 'Gopal Reddy', issue: 'Water-borne Illness', worker: 'ASHA001', status: 'resolved', date: '2025-09-12' },
-    { id: 'C-004', patient: 'Anjali Patel', issue: 'Malnutrition', worker: 'ASHA003', status: 'pending', date: '2025-09-10' }
+    { id: 'C-001', patient: 'Ramesh Singh', issue: 'High Fever', worker: 'ASHA001', status: 'pending', date: '2025-09-15', village: 'Rampur' },
+    { id: 'C-002', patient: 'Sita Devi', issue: 'Diarrhea', worker: 'ASHA002', status: 'in-progress', date: '2025-09-14', village: 'Rampur' },
+    { id: 'C-003', patient: 'Gopal Reddy', issue: 'Water-borne Illness', worker: 'ASHA001', status: 'resolved', date: '2025-09-12', village: 'Rampur' },
+    { id: 'C-004', patient: 'Anjali Patel', issue: 'Malnutrition', worker: 'ASHA003', status: 'pending', date: '2025-09-10', village: 'Srinagar' },
+    { id: 'C-005', patient: 'Arjun Kumar', issue: 'Typhoid', worker: 'ASHA001', status: 'pending', date: '2025-09-16', village: 'Gokul' },
+    { id: 'C-006', patient: 'Lata Singh', issue: 'Diarrhea', worker: 'ASHA002', status: 'in-progress', date: '2025-09-15', village: 'Gokul' },
+    { id: 'C-007', patient: 'Pooja Rai', issue: 'Fever', worker: 'ASHA003', status: 'pending', date: '2025-09-14', village: 'Rampur' },
+    { id: 'C-008', patient: 'Vikram Sharma', issue: 'Water-borne Illness', worker: 'ASHA001', status: 'pending', date: '2025-09-13', village: 'Srinagar' }
   ]);
 
   // Dummy data for Alerts
@@ -50,11 +57,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
     { id: 'A-002', type: 'Health Alert', description: 'Possible outbreak of diarrhea in Sector B', timestamp: '2025-09-16 09:15 AM' }
   ]);
 
-  // Dummy data for Water Sources
+  // Dummy data for Water Sources, now with village info
   const [waterSources, setWaterSources] = useState([
-    { id: 'WS-001', name: 'Village Well - North', status: 'safe', lastTest: '2025-09-15', location: 'Near Panchayat Office' },
-    { id: 'WS-002', name: 'Community Borewell', status: 'warning', lastTest: '2025-09-16', location: 'Main Village Square' },
-    { id: 'WS-003', name: 'Hand Pump - South', status: 'safe', lastTest: '2025-09-16', location: 'South Sector, behind school' }
+    { id: 'WS-001', name: 'Village Well - North', status: 'safe', lastTest: '2025-09-15', location: 'Near Panchayat Office', village: 'Rampur' },
+    { id: 'WS-002', name: 'Community Borewell', status: 'warning', lastTest: '2025-09-16', location: 'Main Village Square', village: 'Rampur' },
+    { id: 'WS-003', name: 'Hand Pump - South', status: 'safe', lastTest: '2025-09-16', location: 'South Sector, behind school', village: 'Srinagar' },
+    { id: 'WS-004', name: 'Village Well - Central', status: 'warning', lastTest: '2025-09-16', location: 'Near Community Hall', village: 'Gokul' },
+    { id: 'WS-005', name: 'Hand Pump - North', status: 'safe', lastTest: '2025-09-15', location: 'Near Temple', village: 'Gokul' },
+    { id: 'WS-006', name: 'Community Pond', status: 'warning', lastTest: '2025-09-15', location: 'Near Forest', village: 'Rampur' },
   ]);
   
   // Mock water quality data
@@ -92,6 +102,39 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
   const handleCardClick = (tabValue: string) => {
     setActiveTab(tabValue);
   };
+
+  // Memoized function to calculate and sort the leaderboard
+  const leaderboardData = useMemo(() => {
+    const scores: { [key: string]: { score: number; patients: number; waterIssues: number } } = {};
+
+    const getVillageScore = (village: string) => {
+      if (!scores[village]) {
+        scores[village] = { score: 0, patients: 0, waterIssues: 0 };
+      }
+      return scores[village];
+    };
+
+    // Calculate scores for active/pending cases
+    activeCases.forEach(caseItem => {
+      if (caseItem.status !== 'resolved') {
+        getVillageScore(caseItem.village).score += 1;
+        getVillageScore(caseItem.village).patients += 1;
+      }
+    });
+
+    // Calculate scores for unhygienic water sources
+    waterSources.forEach(source => {
+      if (source.status === 'warning') {
+        getVillageScore(source.village).score += 2; // Weight water issues more
+        getVillageScore(source.village).waterIssues += 1;
+      }
+    });
+
+    // Convert to array and sort by score descending
+    return Object.entries(scores)
+      .map(([village, data]) => ({ village, ...data }))
+      .sort((a, b) => b.score - a.score);
+  }, [activeCases, waterSources]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -261,6 +304,54 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminData, onLogout }) 
           </TabsContent>
           
           <TabsContent value="reports" className="space-y-4">
+            {/* Health & Hygiene Leaderboard */}
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="w-5 h-5 text-primary" />
+                  Health & Hygiene Leaderboard
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {leaderboardData.length > 0 ? (
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">Villages are ranked based on the number of pending health cases and unhygienic water sources.</p>
+                    <div className="space-y-3">
+                      {leaderboardData.map((data, index) => (
+                        <div key={data.village} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${index === 0 ? 'bg-amber-400' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-yellow-700' : 'bg-secondary'}`}>
+                              {index + 1}
+                            </div>
+                            <div>
+                              <div className="font-medium">{data.village}</div>
+                              <div className="text-sm text-muted-foreground">Score: {data.score}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <HeartCrack className="w-4 h-4 text-red-500" />
+                              <span className="font-bold">{data.patients}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <FlaskConical className="w-4 h-4 text-yellow-500" />
+                              <span className="font-bold">{data.waterIssues}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>No health and hygiene data available to display the leaderboard.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Health Trend Chart - Placeholder */}
             <Card className="shadow-card">
               <CardHeader>
                 <CardTitle>{t('healthTrends')}</CardTitle>
